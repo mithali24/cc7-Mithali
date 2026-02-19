@@ -12,7 +12,6 @@ function lineParityHearts(n: number): string[] {
 
         result.push(line.trim());
     }
-
     return result;
 }
 
