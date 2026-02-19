@@ -16,6 +16,7 @@ function lineParityHearts(n: number): string[] {
     return result;
 }
 
+
 assert.deepStrictEqual(lineParityHearts(5), [
     "💚",
     "💙 💙",
