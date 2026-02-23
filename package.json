@@ -9,10 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@types/node": "^25.2.3",
     "typescript": "^5.9.3"
   },
-  "type": "module"
+  "dependencies": {
+    "grapheme-splitter": "^1.0.4"
+  }
 }
