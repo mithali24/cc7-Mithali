@@ -12,7 +12,8 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^25.2.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
     "grapheme-splitter": "^1.0.4"
