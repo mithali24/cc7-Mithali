@@ -13,15 +13,8 @@ const addresses = [
 
 const emailRegex = /[a-zA-Z][a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+/;
 
-const emails = addresses
-  .map((str) => {
-    const match = str.match(emailRegex);
-    if (match) {
-      return match[0].toLowerCase();
-    } else {
-      return null;
-    }
-  })
-  .filter(Boolean);
+const filtered = addresses.filter((str) => emailRegex.test(str));
+
+const emails = filtered.map((str) => str.match(emailRegex)![0].toLowerCase());
 
 assert.deepStrictEqual(emails, ["bs@sft.com", "michel@sun.it"]);

@@ -14,8 +14,8 @@ let items = [
   "notifyy",
 ];
 
-const result = items.filter(
-  (item) => item.startsWith("mang") || item.endsWith("fy"),
-);
+const regex = /^mang|fy$/;
+
+const result = items.filter((item) => regex.test(item));
 
 assert.deepStrictEqual(result, ["mangalore", "verify", "rectify", "mangala"]);

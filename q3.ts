@@ -12,10 +12,10 @@ onion 31
 water 10`;
 
 const lines = purchase.split("\n");
-console.log(lines);
 
 const linesWithout4 = lines.filter((line) => !line.includes("4"));
-console.log(linesWithout4);
+
+const finalOutput = linesWithout4.join("\n");
 
 assert.deepStrictEqual(linesWithout4, [
   "items qty",
