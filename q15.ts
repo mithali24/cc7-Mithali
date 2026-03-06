@@ -58,24 +58,17 @@ const items: Item[] = [
  * @returns object mapping nutrition type to item name
  */
 const highestByNutrition = (items: Item[]) => {
-  const nutritions = Object.keys(
-    items.reduce((acc, i) => ({ ...acc, ...i.nutritions }), {}),
-  );
+  const keys = Object.keys(items[0].nutritions) as (keyof Nutrition)[];
 
-  return nutritions.reduce((res: Record<string, string>, n) => {
-    let max = -Infinity;
-    let name = "";
+  return keys.reduce<Record<string, string>>((result, key) => {
+    const maxItem = items.reduce((max, item) => {
+      const current = item.nutritions[key] ?? -Infinity;
+      const maxValue = max.nutritions[key] ?? -Infinity;
+      return current > maxValue ? item : max;
+    }, items[0]);
 
-    items.forEach((i) => {
-      const val = i.nutritions[n as keyof Nutrition];
-      if (val !== undefined && val > max) {
-        max = val;
-        name = i.name;
-      }
-    });
-
-    res[n] = name;
-    return res;
+    result[key] = maxItem.name;
+    return result;
   }, {});
 };
 
@@ -87,9 +80,15 @@ assert.strictEqual(highest.protein, "Wallnut");
  * @param items array of food items
  * @returns array of unique nutrition names
  */
-const uniqueNutritions = (items: Item[]) => [
-  ...new Set(items.flatMap((i) => Object.keys(i.nutritions))),
-];
+const uniqueNutritions = (items: Item[]) =>
+  items.reduce<string[]>((acc, item) => {
+    Object.keys(item.nutritions).forEach((key) => {
+      if (!acc.includes(key)) {
+        acc.push(key);
+      }
+    });
+    return acc;
+  }, []);
 
 assert.deepStrictEqual(
   uniqueNutritions(items).sort(),
