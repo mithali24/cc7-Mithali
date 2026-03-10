@@ -15,8 +15,6 @@ const lines = purchase.split("\n");
 
 const linesWithout4 = lines.filter((line) => !line.includes("4"));
 
-const finalOutput = linesWithout4.join("\n");
-
 assert.deepStrictEqual(linesWithout4, [
   "items qty",
   "mango 50",

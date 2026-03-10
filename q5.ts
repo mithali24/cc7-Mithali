@@ -4,7 +4,7 @@ import assert from "assert";
  * 5. Filter all elements that start with 'mang'
  * or end with 'fy'.
  */
-let items = [
+const items = [
   "mangalore",
   "semangin",
   "2 lonely",
