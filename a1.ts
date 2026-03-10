@@ -1,4 +1,4 @@
-import assert from 'assert';
+import assert from "assert";
 
 /**
  * Generates a blue heart triangle pattern as a single string.
@@ -9,38 +9,38 @@ import assert from 'assert';
  * @throws Error if lines is negative
  */
 function blueHeartPattern(lines: number): string {
-    if (lines < 0) {
-        throw new Error("Line count cannot be negative");
-    }
+  if (lines < 0) {
+    throw new Error("Line count cannot be negative");
+  }
 
-    let pattern = '';
+  let pattern = "";
 
-    for (let i = 1; i <= lines; i++) {
-        pattern += '💙 '.repeat(i).trimEnd() + '\n';
-    }
+  for (let i = 1; i <= lines; i++) {
+    pattern += "💙 ".repeat(i).trimEnd() + "\n";
+  }
 
-    return pattern.trimEnd();
+  return pattern.trimEnd();
 }
 
-let expected = `💙
+const expected = `💙
 💙 💙
 💙 💙 💙
 💙 💙 💙 💙
 💙 💙 💙 💙 💙`;
 
 assert.strictEqual(
-    blueHeartPattern(5),
-    expected,
-    "should generate correct 5-line blue heart pattern"
+  blueHeartPattern(5),
+  expected,
+  "should generate correct 5-line blue heart pattern",
 );
 
 assert.strictEqual(
-    blueHeartPattern(0),
-    "",
-    "should return empty string when lines is 0"
+  blueHeartPattern(0),
+  "",
+  "should return empty string when lines is 0",
 );
 
 assert.throws(
-    () => blueHeartPattern(-1),
-    "should throw error when lines is negative"
+  () => blueHeartPattern(-1),
+  "should throw error when lines is negative",
 );
