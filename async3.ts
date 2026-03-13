@@ -52,18 +52,19 @@ export async function getContents(
  */
 export async function getSize(filePath: string): Promise<number> {
   try {
-    const stats = await fs.stat(filePath);
+    const type = await getFileType(filePath);
 
-    if (stats.isFile()) {
+    if (type === "FILE") {
+      const stats = await fs.stat(filePath);
       return stats.size;
     }
 
-    if (stats.isDirectory()) {
-      const files = await fs.readdir(filePath);
+    if (type === "DIRECTORY") {
+      const files = await getContents(filePath);
 
       let totalSize = 0;
 
-      for (const file of files) {
+      for (const file of files as string[]) {
         const fileFullPath = path.join(filePath, file);
         totalSize += await getSize(fileFullPath);
       }

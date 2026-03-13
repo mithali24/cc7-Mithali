@@ -48,15 +48,14 @@ function getContents(filePath: string): Promise<string | string[]> {
  * @returns Promise resolving to size in bytes
  */
 function getSize(filePath: string): Promise<number> {
-  return fs.promises
-    .stat(filePath)
-    .then((stats) => {
-      if (stats.isFile()) {
-        return stats.size;
+  return getFileType(filePath)
+    .then((type) => {
+      if (type === "FILE") {
+        return fs.promises.stat(filePath).then((stats) => stats.size);
       }
 
-      if (stats.isDirectory()) {
-        return fs.promises.readdir(filePath).then((files) => {
+      if (type === "DIRECTORY") {
+        return getContents(filePath).then((files) => {
           const sizePromises = files.map((file) =>
             getSize(path.join(filePath, file)),
           );
@@ -73,8 +72,6 @@ function getSize(filePath: string): Promise<number> {
       throw new Error("file system error");
     });
 }
-
-/* -------- Console Testing -------- */
 
 const testPath = ".";
 
