@@ -30,24 +30,18 @@ describe("getUsers", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it("should fetch users and return them after delay", async () => {
     const promise = getUsers(2000);
 
-    let resolved = false;
-    let result: User[] | undefined;
-
-    promise.then((users) => {
-      resolved = true;
-      result = users;
-    });
-
     await vi.advanceTimersByTimeAsync(2000);
 
-    expect(resolved).toBe(true);
+    const result = await promise;
+
     expect(Array.isArray(result)).toBe(true);
-    expect(result?.length).toBe(2);
+    expect(result.length).toBe(2);
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

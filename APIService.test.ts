@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { APIService, type Post, type Comment } from "./async7.js";
 
 describe("APIService", () => {
@@ -7,6 +7,10 @@ describe("APIService", () => {
   beforeEach(() => {
     service = new APIService();
     vi.stubGlobal("fetch", vi.fn());
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe("fetchPost", () => {

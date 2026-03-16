@@ -1,3 +1,4 @@
+import { delay } from "./async5.js";
 /**
  * Represents a user object returned by the API.
  */
@@ -18,7 +19,7 @@ export async function getUsers(delayMs = 2000): Promise<User[]> {
   const response = await fetch("https://jsonplaceholder.typicode.com/users");
   const users: User[] = await response.json();
 
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
+  await delay(delayMs);
 
   return users;
 }

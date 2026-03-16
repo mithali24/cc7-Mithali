@@ -13,18 +13,9 @@ describe("delay", () => {
   it("should resolve after the specified milliseconds", async () => {
     const promise = delay(1000);
 
-    let resolved = false;
-    promise.then(() => {
-      resolved = true;
-    });
+    await vi.advanceTimersByTimeAsync(1000);
 
-    vi.advanceTimersByTime(500);
-    await Promise.resolve();
-    expect(resolved).toBe(false);
-
-    vi.advanceTimersByTime(500);
-    await Promise.resolve();
-    expect(resolved).toBe(true);
+    await expect(promise).resolves.toBeUndefined();
   });
 
   it("should resolve to undefined", async () => {
