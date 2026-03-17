@@ -1,0 +1,225 @@
+/* RESET */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%; /* 16px default */
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+
+  background: #0f172a; /* dark background */
+  color: #e5e7eb;
+}
+
+/* TITLE */
+
+.title {
+  text-align: center;
+
+  margin-top: 2.5rem; /* 40px */
+  margin-bottom: 1.875rem; /* 30px */
+
+  font-family: "Outfit", sans-serif;
+
+  font-size: 2.31rem; /* 37px */
+  font-weight: 700;
+
+  letter-spacing: -0.03rem; /* -0.5px */
+}
+
+/* MAIN CONTAINER */
+
+.container {
+  width: 43.75rem; /* 700px */
+  margin: auto;
+}
+
+/* POST CARD */
+
+.post {
+  background: #1e293b;
+  border: 0.0625rem solid #334155; /* 1px */
+  border-radius: 0.625rem; /* 10px */
+  padding: 1.375rem; /* 22px */
+  margin-bottom: 1.25rem; /* 20px */
+  box-shadow: 0 0.5rem 1.5625rem rgba(0, 0, 0, 0.6); /* 8px 25px */
+
+  min-height: 10rem;
+}
+
+.post:hover {
+  background: #243247;
+  transition: background 0.2s ease;
+}
+
+/* Update your CSS from .post h3 to .post h2 */
+.post h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.875rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  color: #8b5cf6;
+}
+
+/* POST BODY */
+
+.post p {
+  font-size: 0.9375rem; /* 15px */
+  color: #cbd5e1;
+
+  line-height: 1.5rem; /* 24px */
+}
+
+/* BUTTON */
+
+button {
+  margin-top: 0.875rem; /* 14px */
+
+  background: #8b5cf6;
+  color: white;
+
+  border: none;
+  border-radius: 0.375rem; /* 6px */
+
+  padding: 0.5rem 0.875rem; /* 8px 14px */
+
+  font-size: 0.875rem; /* 14px */
+
+  cursor: pointer;
+
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #7c3aed;
+}
+
+/* COMMENTS */
+
+.comments {
+  margin-top: 1.125rem; /* 18px */
+  padding-top: 0.875rem; /* 14px */
+
+  border-top: 0.0625rem solid #1f2937; /* 1px */
+}
+
+.comment {
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+.comment h4 {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+
+  color: #f1f5f9;
+}
+
+.comment p {
+  font-size: 0.875rem; /* 14px */
+  color: #94a3b8;
+}
+
+.comment small {
+  font-size: 0.75rem; /* 12px */
+  color: #64748b;
+}
+
+.comment-container {
+  background: #1e293b;
+  border: 0.0625rem solid #334155; /* 1px */
+  border-radius: 0.625rem; /* 10px */
+  padding: 0.75rem 1rem; /* 12px 16px */
+  margin-bottom: 0.75rem; /* 12px */
+}
+
+.comment-author {
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 0.375rem; /* 6px */
+  font-family: "Outfit", sans-serif;
+}
+
+.comment-body h4 {
+  font-size: 0.875rem; /* 14px */
+  color: #f1f5f9;
+}
+
+.comment-body p {
+  font-size: 0.875rem; /* 14px */
+  color: #cbd5e1;
+  line-height: 1.3125rem; /* 21px */
+}
+
+/* PAGINATION */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 1.25rem; /* 20px */
+  margin-top: 1.875rem; /* 30px */
+}
+
+/* POST WORD HIGHLIGHT */
+
+.post-word {
+  color: #8b5cf6;
+}
+
+/* POST ACTIONS */
+
+.post-actions {
+  display: flex;
+  gap: 0.625rem; /* 10px */
+  margin-top: 0.875rem; /* 14px */
+}
+
+/* REFRESH BUTTON */
+
+.refresh-btn {
+  order: -1;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem; /* 6px */
+  padding: 0.5rem 0.875rem; /* 8px 14px */
+  font-size: 0.875rem; /* 14px */
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.refresh-btn:hover {
+  background: #7c3aed;
+}
+
+/* VIEW COMMENTS BUTTON */
+
+.view-comments-btn {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 0.375rem; /* 6px */
+  padding: 0.5rem 0.875rem; /* 8px 14px */
+  font-size: 0.875rem; /* 14px */
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.view-comments-btn:hover {
+  background: #7c3aed;
+}
+
+.error {
+  display: block !important;
+  visibility: visible !important;
+  color: #ef4444; /* Red color so it's obvious */
+  text-transform: none !important; /* Ensure case stays lowercase */
+}

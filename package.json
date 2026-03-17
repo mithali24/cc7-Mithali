@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "lint": "npm run lint --prefix post-browser",
+    "test": "npm test --prefix post-browser",
+    "test:local": "vitest run"
   },
   "keywords": [],
   "author": "",
