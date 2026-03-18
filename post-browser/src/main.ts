@@ -1,107 +1,82 @@
 import "./style.css";
 
 import { APIService } from "./api/APIService";
-import type { Post, Comment } from "./api/APIService";
-import { CacheService } from "./services/CacheService";
+import type { Post } from "./api/APIService";
 import { renderPosts } from "./ui/renderPosts";
-import { renderComments } from "./ui/renderComments";
 
 const api = new APIService();
-const commentCache = new CacheService();
 
 const postContainer = document.querySelector("#posts") as HTMLElement;
 const prevBtn = document.querySelector("#prev") as HTMLButtonElement;
 const nextBtn = document.querySelector("#next") as HTMLButtonElement;
-const pageText = document.querySelector("#page") as HTMLElement;
 
 let posts: Post[] = [];
-let page = 1;
-const PAGE_SIZE = 1;
+let currentIndex = 0;
 
 /**
- * Extend Window type to include refreshApp
+ * Initialize the application:
+ * - Fetch posts from API
+ * - Render the first post
+ * - Show error if fetch fails
  */
-interface WindowWithRefresh extends Window {
-  refreshApp: () => void;
-}
-
-/**
- * Initialize App and handle errors for Playwright Test
- */
-async function init() {
+async function init(): Promise<void> {
   try {
-    postContainer.innerHTML = ""; // Clear container immediately
+    postContainer.innerHTML = "";
     posts = await api.fetchPosts();
     renderPage();
   } catch {
-    postContainer.innerHTML =
-      '<p class="error" style="color: red; display: block !important; visibility: visible !important;">error</p>';
-    console.error("API Fetch failed - showing error text");
+    postContainer.innerHTML = '<p class="error">Error loading posts</p>';
+    console.error("API fetch failed - showing error text");
   }
 }
 
 /**
- * Render current page
+ * Render the current post based on currentIndex
+ * Updates UI and handles edge cases
  */
-function renderPage() {
-  const start = (page - 1) * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
+function renderPage(): void {
+  const post = posts[currentIndex];
 
-  const pagePosts = posts.slice(start, end);
+  if (!post) {
+    postContainer.innerHTML = '<p class="error">No post available</p>';
+    return;
+  }
 
-  renderPosts(pagePosts, postContainer);
-
-  pageText.textContent = `Page ${page}`;
+  renderPosts([post], postContainer, () => {
+    currentIndex = 0;
+    renderPage();
+  });
+  updateButtons();
 }
 
 /**
- * Global reset function for Refresh button
+ * Update the disabled state of previous/next buttons
+ * based on currentIndex
  */
-(window as WindowWithRefresh).refreshApp = () => {
-  page = 1;
-  renderPage();
-};
+function updateButtons(): void {
+  prevBtn.disabled = currentIndex === 0;
+  nextBtn.disabled = currentIndex === posts.length - 1;
+}
 
 /**
- * Previous / Next button handlers
+ * Navigate to the previous post
  */
-prevBtn.onclick = () => {
-  if (page > 1) {
-    page--;
-    renderPage();
-  }
-};
-
-nextBtn.onclick = () => {
-  if (page * PAGE_SIZE < posts.length) {
-    page++;
+prevBtn.onclick = (): void => {
+  if (currentIndex > 0) {
+    currentIndex--;
     renderPage();
   }
 };
 
 /**
- * Click listener for View Comments buttons
+ * Navigate to the next post
  */
-postContainer.addEventListener("click", async (e: MouseEvent) => {
-  const target = e.target as HTMLElement;
-
-  if (
-    target.tagName === "BUTTON" &&
-    target.classList.contains("view-comments-btn")
-  ) {
-    const id = target.dataset.id!;
-    let comments = commentCache.get(id) as Comment[] | undefined;
-
-    if (!comments) {
-      comments = (await api.fetchComments(Number(id))) as unknown as Comment[];
-      commentCache.set(id, comments);
-    }
-
-    const container = document.querySelector(`#comments-${id}`) as HTMLElement;
-
-    renderComments(comments, container);
+nextBtn.onclick = (): void => {
+  if (currentIndex < posts.length - 1) {
+    currentIndex++;
+    renderPage();
   }
-});
+};
 
 // Start the app
 init();

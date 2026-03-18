@@ -47,11 +47,9 @@ test.describe("Post Browser App", () => {
     await expect(page.locator("text=error")).toBeVisible();
   });
 
-  // SCENARIO 4: Error Scenarios - Comments Fetch Fails
   test("should show error message when comments fetch fails", async ({
     page,
   }) => {
-    // Let the post load normally, but fail the comments request
     await page.route("**/comments*", (route) =>
       route.fulfill({
         status: 500,
@@ -62,13 +60,10 @@ test.describe("Post Browser App", () => {
 
     await page.goto(APP_URL);
 
-    // Wait for the post to fully load first
     await expect(page.locator(".post-title")).toBeVisible();
 
-    // Open the comments panel
-    await page.locator("#view-comments-btn").click();
+    await page.locator(".view-comments-btn").click();
 
-    // The comments section should show an error message
     const commentsError = page.locator(".comments-error");
     await expect(commentsError).toBeVisible({ timeout: 5000 });
     await expect(commentsError).toContainText(/fail|error/i);

@@ -1,64 +1,108 @@
 import type { Post } from "../api/APIService";
 import { renderComments } from "./renderComments";
 
-declare global {
-  interface Window {
-    refreshApp?: () => void;
-  }
-}
-
-export function renderPosts(posts: Post[], container: HTMLElement) {
+/**
+ * Render a list of posts inside a container element.
+ * Each post includes buttons to view comments and refresh the post.
+ *
+ * @param {Post[]} posts - Array of post objects to render.
+ * @param {HTMLElement} container - The DOM element where posts will be displayed.
+ */
+export function renderPosts(
+  posts: Post[],
+  container: HTMLElement,
+  onRefresh?: () => void,
+) {
   container.innerHTML = "";
+  const commentsContainer = document.getElementById(
+    "comments-root",
+  ) as HTMLElement;
 
   posts.forEach((post) => {
-    const div = document.createElement("div");
-    div.className = "post";
+    const wrapper = document.createElement("div");
 
-    // UPDATED: Added 'post-title' class and 'view-comments-btn' id
-    div.innerHTML = `
-      <h2 class="post-title"><span class="post-word">POST</span> ${post.title}</h2>
-      <p>${post.body}</p>
-      <div class="post-actions">
-        <button class="view-comments-btn" id="view-comments-btn" data-id="${post.id}">View Comments</button>
-        <button class="refresh-btn">Refresh</button>
+    wrapper.innerHTML = `
+      <div class="post">
+        <h2 class="post-title">
+          <span class="post-word">POST</span> ${post.title}
+        </h2>
+
+        <p>${post.body}</p>
+
+        <div class="post-actions">
+  <button class="view-comments-btn">View Comments</button>
+  <button class="refresh-btn">Refresh</button>
+</div>
+
+<!-- Add this inside the post wrapper -->
+<div class="comments-container" id="comments-${post.id}"></div>
       </div>
-      <div class="comments" id="comments-${post.id}"></div>
     `;
 
-    const viewBtn = div.querySelector(
+    const viewBtn = wrapper.querySelector(
       ".view-comments-btn",
     ) as HTMLButtonElement;
-    const refreshBtn = div.querySelector(".refresh-btn") as HTMLButtonElement;
-    const commentsContainer = div.querySelector(".comments") as HTMLElement;
 
+    const refreshBtn = wrapper.querySelector(
+      ".refresh-btn",
+    ) as HTMLButtonElement;
+
+    // Track comment toggle state
+    let isOpen = false;
+    let isLoaded = false;
+
+    /**
+     * Handle click on "View Comments" button:
+     * - Fetch and render comments if not loaded
+     * - Toggle visibility of comments
+     */
     viewBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch(
-          `https://jsonplaceholder.typicode.com/posts/${post.id}/comments`,
-        );
+        // CLOSE comments
+        if (isOpen) {
+          commentsContainer.innerHTML = "";
+          viewBtn.textContent = "View Comments";
+          isOpen = false;
+          isLoaded = false;
+          return;
+        }
 
-        // Handle non-200 responses (like the 500 error in the test)
-        if (!response.ok) throw new Error("Fetch failed");
+        // OPEN comments
+        if (!isLoaded) {
+          const response = await fetch(
+            `https://jsonplaceholder.typicode.com/posts/${post.id}/comments`,
+          );
 
-        const comments = await response.json();
-        renderComments(comments, commentsContainer);
-        viewBtn.style.display = "none";
-      } catch (error) {
-        // UPDATED: Added 'comments-error' class for the test locator
+          if (!response.ok) throw new Error("Fetch failed");
+
+          const comments = await response.json();
+          renderComments(comments, commentsContainer);
+          isLoaded = true;
+        }
+
+        viewBtn.textContent = "Close Comments";
+        isOpen = true;
+      } catch {
         commentsContainer.innerHTML = `<p class="comments-error">error</p>`;
-        console.error("Comments fetch failed:", error);
       }
     });
 
+    /**
+     * Handle click on "Refresh" button:
+     * - Clear comments
+     * - Reset button and state
+     */
     refreshBtn.addEventListener("click", () => {
-      if (typeof window.refreshApp === "function") {
-        window.refreshApp();
+      if (onRefresh) {
+        onRefresh();
       } else {
         commentsContainer.innerHTML = "";
-        viewBtn.style.display = "inline-block";
+        viewBtn.textContent = "View Comments";
+        isOpen = false;
+        isLoaded = false;
       }
     });
 
-    container.appendChild(div);
+    container.appendChild(wrapper);
   });
 }
