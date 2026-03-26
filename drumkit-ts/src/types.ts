@@ -1,4 +1,3 @@
-// types.ts
 export type Mode =
   | "normal"
   | "recording-progress"
@@ -9,22 +8,24 @@ export type Mode =
 export interface Beat {
   key: string;
   timestamp: number;
+  type: "beat";
 }
 
-export interface Recording {
-  name: string;
-  beats: Beat[];
+export interface Pause {
+  timestamp: number;
+  type: "pause";
 }
+
+export type Recording = (Beat | Pause)[];
 
 export interface State {
   mode: Mode;
-  recordings: Recording[];
-  currentRecording: Beat[];
+  currentRecording: Recording;
 }
 
 export type Action =
   | { type: "START_RECORDING" }
-  | { type: "PAUSE_RECORDING" }
+  | { type: "PAUSE_RECORDING"; pause: Pause }
   | { type: "CONTINUE_RECORDING" }
   | { type: "STOP_RECORDING" }
   | { type: "ADD_BEAT"; payload: Beat }
