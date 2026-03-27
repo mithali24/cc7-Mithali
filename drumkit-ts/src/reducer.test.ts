@@ -12,7 +12,7 @@ describe("Reducer Tests", () => {
     };
   });
 
-  const sampleBeat: Beat = { key: "A", timestamp: 100 };
+  const sampleBeat: Beat = { key: "A", timestamp: 100, type: "beat" };
 
   test("START_RECORDING sets mode to recording-progress and clears currentRecording", () => {
     const newState = reducer(initialState, { type: "START_RECORDING" });
@@ -37,13 +37,13 @@ describe("Reducer Tests", () => {
   test("PAUSE_RECORDING sets mode to recording-paused only if recording-progress", () => {
     let state = reducer(initialState, {
       type: "PAUSE_RECORDING",
-      pause: { timestamp: 1000 },
+      pause: { timestamp: 1000, type: "pause" },
     });
     expect(state.mode).toBe("normal");
 
     state = reducer(
       { ...initialState, mode: "recording-progress" },
-      { type: "PAUSE_RECORDING", pause: { timestamp: 1000 } },
+      { type: "PAUSE_RECORDING", pause: { timestamp: 1000, type: "pause" } },
     );
     expect(state.mode).toBe("recording-paused");
   });
@@ -51,13 +51,12 @@ describe("Reducer Tests", () => {
   test("CONTINUE_RECORDING sets mode back to recording-progress only if paused", () => {
     let state = reducer(
       { ...initialState, mode: "recording-paused" },
-      { type: "CONTINUE_RECORDING", pause: { timestamp: 1000 } },
+      { type: "CONTINUE_RECORDING" },
     );
     expect(state.mode).toBe("recording-progress");
 
     state = reducer(initialState, {
       type: "CONTINUE_RECORDING",
-      pause: { timestamp: 1000 },
     });
     expect(state.mode).toBe("normal");
   });

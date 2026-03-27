@@ -23,49 +23,42 @@ export class Player {
   }
 
   private normalize(recording: Recording): ScheduledBeat[] {
-    const result: ScheduledBeat[] = [];
+  const result: ScheduledBeat[] = [];
 
-    let prevTime: number | null = null;
-    let totalDelay = 0;
+  const startTime = recording[0]?.timestamp ?? 0;
 
-    for (const item of recording) {
-      if (prevTime === null) {
-        prevTime = item.timestamp;
-      }
-
-      const gap = item.timestamp - prevTime;
-      totalDelay += gap;
-
-      if (item.type === "beat") {
-        result.push({
-          delay: totalDelay,
-          beat: item,
-        });
-      }
-
-      prevTime = item.timestamp;
+  for (const item of recording) {
+    if (item.type === "beat") {
+      result.push({
+        delay: item.timestamp - startTime,
+        beat: item,
+      });
     }
-
-    return result;
   }
+
+  return result;
+}
 
   play() {
-    this.clearTimers();
-    this.startTime = Date.now();
+  this.clearTimers();
+  this.startTime = Date.now();
 
-    for (let i = this.currentIndex; i < this.schedule.length; i++) {
-      const { delay, beat } = this.schedule[i];
+  for (let i = this.currentIndex; i < this.schedule.length; i++) {
+    const { delay, beat } = this.schedule[i];
 
-      const adjustedDelay = delay - (this.pausedAt - this.startTime);
+    const adjustedDelay =
+      this.pausedAt === 0
+        ? delay
+        : delay - (this.pausedAt - this.startTime);
 
-      const timer = setTimeout(() => {
-        this.playback(beat);
-        this.currentIndex = i + 1;
-      }, adjustedDelay);
+    const timer = setTimeout(() => {
+      this.playback(beat);
+      this.currentIndex = i + 1;
+    }, adjustedDelay);
 
-      this.timers.push(timer);
-    }
+    this.timers.push(timer);
   }
+}
 
   pause() {
     this.pausedAt = Date.now();
