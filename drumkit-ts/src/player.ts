@@ -1,7 +1,5 @@
 import type { Recording, Beat } from "./types";
 
-type Timeout = ReturnType<typeof setTimeout>;
-
 type ScheduledBeat = {
   delay: number;
   beat: Beat;
@@ -11,7 +9,7 @@ export class Player {
   private playback: (beat: Beat) => void;
 
   private schedule: ScheduledBeat[] = [];
-  private timers: Timeout[] = [];
+  private timers: ReturnType<typeof setTimeout>[] = [];
 
   private startTime = 0;
   private pausedAt = 0;
@@ -23,42 +21,39 @@ export class Player {
   }
 
   private normalize(recording: Recording): ScheduledBeat[] {
-  const result: ScheduledBeat[] = [];
+    const result: ScheduledBeat[] = [];
+    const startTime = recording[0]?.timestamp ?? 0;
 
-  const startTime = recording[0]?.timestamp ?? 0;
-
-  for (const item of recording) {
-    if (item.type === "beat") {
-      result.push({
-        delay: item.timestamp - startTime,
-        beat: item,
-      });
+    for (const item of recording) {
+      if (item.type === "beat") {
+        result.push({
+          delay: item.timestamp - startTime,
+          beat: item,
+        });
+      }
     }
-  }
 
-  return result;
-}
+    return result;
+  }
 
   play() {
-  this.clearTimers();
-  this.startTime = Date.now();
+    this.clearTimers();
+    this.startTime = Date.now();
 
-  for (let i = this.currentIndex; i < this.schedule.length; i++) {
-    const { delay, beat } = this.schedule[i];
+    for (let i = this.currentIndex; i < this.schedule.length; i++) {
+      const { delay, beat } = this.schedule[i];
 
-    const adjustedDelay =
-      this.pausedAt === 0
-        ? delay
-        : delay - (this.pausedAt - this.startTime);
+      const adjustedDelay =
+        this.pausedAt === 0 ? delay : delay - (this.pausedAt - this.startTime);
 
-    const timer = setTimeout(() => {
-      this.playback(beat);
-      this.currentIndex = i + 1;
-    }, adjustedDelay);
+      const timer = setTimeout(() => {
+        this.playback(beat);
+        this.currentIndex = i + 1;
+      }, adjustedDelay);
 
-    this.timers.push(timer);
+      this.timers.push(timer);
+    }
   }
-}
 
   pause() {
     this.pausedAt = Date.now();
@@ -77,8 +72,23 @@ export class Player {
     this.pausedAt = 0;
   }
 
+  getDuration(): number {
+    if (this.schedule.length === 0) return 0;
+    return this.schedule[this.schedule.length - 1].delay;
+  }
+
+  getProgress(): number {
+    if (this.schedule.length === 0) return 0;
+
+    const now = this.pausedAt ? this.pausedAt : Date.now();
+
+    const elapsed = now - this.startTime;
+
+    return Math.min(elapsed, this.getDuration());
+  }
+
   private clearTimers() {
-    this.timers.forEach(clearTimeout);
+    this.timers.forEach((t) => clearTimeout(t));
     this.timers = [];
   }
 }

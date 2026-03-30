@@ -1,6 +1,6 @@
 html {
   font-size: 10px;
-  background: url("./background.jpg") bottom center;
+  background-color: black;
   background-size: cover;
 }
 
@@ -9,10 +9,11 @@ html {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  overflow: hidden;
 }
 
 body {
-  background: url("/background.jpg") no-repeat center center fixed;
+  background-color: black;
   background-size: cover;
 }
 
@@ -25,7 +26,7 @@ body {
 }
 
 .key {
-  border: 4px solid black;
+  border: 4px solid #ffc600;
   border-radius: 5px;
   margin: 10px;
   font-size: 1.5rem;
@@ -59,15 +60,16 @@ kbd {
 .controls {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   margin: 20px;
   gap: 20px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .record-controls,
 .playback-controls {
   display: flex;
   gap: 15px;
+  justify-content: flex-end;
 }
 
 button {
@@ -104,7 +106,7 @@ button:active {
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -130,23 +132,76 @@ button:disabled {
   }
 }
 
+/* ✅ FIXED: Play button stays clean */
 #play {
   position: relative;
   overflow: hidden;
 }
 
+/* ❌ REMOVED positioning inside button */
 #play-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  height: 4px;
+  height: 100%;
   width: 0%;
   background-color: #fff200;
-  border-radius: 0 0 40px 40px;
+  transition: width 0.05s linear;
+}
+
+/* ✅ NEW: Separate progress bar container */
+.progress-container {
+  width: 320px;
+  height: 6px;
+  margin: 10px auto 0 auto;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* make inner bar fill container */
+.progress-container #play-progress {
+  height: 100%;
+  width: 0%;
+  background-color: #fff200;
   transition: width 0.05s linear;
 }
 
 button span.icon {
   font-size: 18px;
   display: inline-block;
+}
+
+#status {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  font-size: 3rem;
+  color: #ffc600;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.show-status {
+  animation: zoomFade 1s ease forwards;
+}
+
+@keyframes zoomFade {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.key.active {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.3);
+  transition: 0.1s;
 }
