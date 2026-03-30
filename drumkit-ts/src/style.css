@@ -1,0 +1,184 @@
+html {
+  font-size: 10px;
+  background: url("./background.jpg") bottom center;
+  background-size: cover;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+body {
+  background: url("/background.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+.keys {
+  display: flex;
+  flex: 1;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.key {
+  border: 4px solid black;
+  border-radius: 5px;
+  margin: 10px;
+  font-size: 1.5rem;
+  padding: 10px 0.5rem;
+  transition: all 0.07s ease;
+  width: 100px;
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.4);
+  text-shadow: 0 0 5px black;
+}
+
+.playing {
+  transform: scale(1.1);
+  border-color: #ffc600;
+  box-shadow: 0 0 10px #ffc600;
+}
+
+kbd {
+  display: block;
+  font-size: 4rem;
+}
+
+.sound {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  color: #ffc600;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+  gap: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.record-controls,
+.playback-controls {
+  display: flex;
+  gap: 15px;
+}
+
+button {
+  width: 160px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  color: #ffc600;
+  border: 2px solid #ffc600;
+  border-radius: 40px;
+
+  box-shadow: 0 0 10px rgba(255, 198, 0, 0.2);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+button:hover {
+  background: rgba(255, 198, 0, 0.1);
+  box-shadow: 0 0 20px rgba(255, 198, 0, 0.5);
+}
+
+button:active {
+  transform: scale(0.97);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+#record.is-recording {
+  color: #ff4b2b;
+  border-color: #ff4b2b;
+  box-shadow: 0 0 20px rgba(255, 75, 43, 0.6);
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 0 0 30px rgba(255, 75, 43, 0.8);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#play {
+  position: relative;
+  overflow: hidden;
+}
+
+#play-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background-color: #fff200;
+  border-radius: 0 0 40px 40px;
+  transition: width 0.05s linear;
+}
+
+button span.icon {
+  font-size: 18px;
+  display: inline-block;
+}
+
+#status {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  font-size: 3rem;
+  color: #ffc600;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.show-status {
+  animation: zoomFade 1s ease forwards;
+}
+
+@keyframes zoomFade {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
