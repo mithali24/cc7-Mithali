@@ -1,0 +1,16 @@
+[
+  { "keyCode": 65, "key": "A", "sound": "clap", "file": "/sounds/clap.wav" },
+  { "keyCode": 83, "key": "S", "sound": "hihat", "file": "/sounds/hihat.wav" },
+  { "keyCode": 68, "key": "D", "sound": "kick", "file": "/sounds/kick.wav" },
+  {
+    "keyCode": 70,
+    "key": "F",
+    "sound": "openhat",
+    "file": "/sounds/openhat.wav"
+  },
+  { "keyCode": 71, "key": "G", "sound": "boom", "file": "/sounds/boom.wav" },
+  { "keyCode": 72, "key": "H", "sound": "ride", "file": "/sounds/ride.wav" },
+  { "keyCode": 74, "key": "J", "sound": "snare", "file": "/sounds/snare.wav" },
+  { "keyCode": 75, "key": "K", "sound": "tom", "file": "/sounds/tom.wav" },
+  { "keyCode": 76, "key": "L", "sound": "tink", "file": "/sounds/tink.wav" }
+]

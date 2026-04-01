@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isRecording =
       state.mode === "recording-progress" || state.mode === "recording-paused";
 
-    recordBtn.disabled = state.mode === "recording-progress";
+    recordBtn.disabled = isRecording;
 
     playBtn.disabled = isRecording || state.currentRecording.length === 0;
 
@@ -142,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   stopBtn.onclick = () => {
     dispatch({ type: "STOP_RECORDING" });
+
     pauseBtn.textContent = "Pause";
     showStatus("Recording stopped");
   };
@@ -152,13 +153,42 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (isPlaying && player) {
+    if (player && isPlaying) {
       player.pause();
       isPlaying = false;
       playBtn.textContent = "▶ Play";
       showStatus("Playback paused");
 
       if (animationFrame) cancelAnimationFrame(animationFrame);
+      return;
+    }
+
+    if (player && !isPlaying) {
+      player.resume();
+      isPlaying = true;
+      playBtn.textContent = "⏸ Pause";
+      showStatus("Playing recording");
+
+      const start = performance.now() - player.getProgress();
+      const duration = player.getDuration();
+
+      const tick = () => {
+        const elapsed = performance.now() - start;
+        const progress = Math.min((elapsed / duration) * 100, 100);
+
+        progressEl.style.width = `${progress}%`;
+
+        if (progress >= 100) {
+          finishPlayback();
+          return;
+        }
+
+        if (progress < 100 && isPlaying) {
+          animationFrame = requestAnimationFrame(tick);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(tick);
       return;
     }
 
@@ -186,6 +216,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       progressEl.style.width = `${progress}%`;
 
+      if (progress >= 100) {
+        finishPlayback();
+        return;
+      }
+
       if (progress < 100 && isPlaying) {
         animationFrame = requestAnimationFrame(tick);
       }
@@ -193,6 +228,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     animationFrame = requestAnimationFrame(tick);
   };
+
+  function finishPlayback() {
+    isPlaying = false;
+    playBtn.textContent = "▶ Play";
+    showStatus("Playback finished");
+
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+
+    player?.stop();
+
+    progressEl.style.width = "100%";
+  }
 
   document.getElementById("clear")!.onclick = () => {
     const shouldClear = confirm(

@@ -47,7 +47,7 @@ test.describe("Drumkit E2E Tests", () => {
 
     await page.click("#record");
 
-    await page.keyboard.press("Q"); // invalid
+    await page.keyboard.press("Q");
     await page.click("#stop");
 
     const playBtn = page.locator("#play");
@@ -69,7 +69,6 @@ test.describe("Drumkit E2E Tests", () => {
     await page.keyboard.press("A");
     await page.click("#stop");
 
-    // ✅ handle confirm dialog
     page.once("dialog", (dialog) => dialog.accept());
 
     await page.click("#clear");
@@ -85,9 +84,9 @@ test.describe("Drumkit E2E Tests", () => {
     await page.keyboard.press("A");
 
     await page.click("#pause");
-    await page.keyboard.press("S"); // ignored while paused
+    await page.keyboard.press("S");
 
-    await page.click("#pause"); // resume
+    await page.click("#pause");
     await page.keyboard.press("D");
 
     await page.click("#stop");

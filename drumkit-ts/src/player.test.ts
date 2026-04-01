@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { Player } from "./player";
-import type {Pause, Recording } from "./types";
+import { Player } from "./player.js";
+import type { Pause, Recording } from "./types.js";
 
 describe("Player", () => {
   it("plays beats in order", () => {

@@ -12,8 +12,10 @@ export class Player {
   private timers: ReturnType<typeof setTimeout>[] = [];
 
   private startTime = 0;
-  private pausedAt = 0;
+  private elapsedBeforePause = 0;
+
   private currentIndex = 0;
+  private isPlaying = false;
 
   constructor(recording: Recording, playback: (beat: Beat) => void) {
     this.playback = playback;
@@ -38,38 +40,53 @@ export class Player {
 
   play() {
     this.clearTimers();
+
+    this.isPlaying = true;
     this.startTime = Date.now();
 
     for (let i = this.currentIndex; i < this.schedule.length; i++) {
       const { delay, beat } = this.schedule[i];
 
-      const adjustedDelay =
-        this.pausedAt === 0 ? delay : delay - (this.pausedAt - this.startTime);
+      const remainingDelay = delay - this.elapsedBeforePause;
+
+      if (remainingDelay <= 0) {
+        this.playback(beat);
+        this.currentIndex = i + 1;
+        continue;
+      }
 
       const timer = setTimeout(() => {
         this.playback(beat);
         this.currentIndex = i + 1;
-      }, adjustedDelay);
+      }, remainingDelay);
 
       this.timers.push(timer);
     }
   }
 
   pause() {
-    this.pausedAt = Date.now();
+    if (!this.isPlaying) return;
+
+    this.isPlaying = false;
+
+    this.elapsedBeforePause += Date.now() - this.startTime;
+
     this.clearTimers();
   }
 
   resume() {
-    this.startTime += Date.now() - this.pausedAt;
+    if (this.isPlaying) return;
+
     this.play();
   }
 
   stop() {
     this.clearTimers();
+
     this.currentIndex = 0;
     this.startTime = 0;
-    this.pausedAt = 0;
+    this.elapsedBeforePause = 0;
+    this.isPlaying = false;
   }
 
   getDuration(): number {
@@ -80,9 +97,9 @@ export class Player {
   getProgress(): number {
     if (this.schedule.length === 0) return 0;
 
-    const now = this.pausedAt ? this.pausedAt : Date.now();
-
-    const elapsed = now - this.startTime;
+    const elapsed = this.isPlaying
+      ? this.elapsedBeforePause + (Date.now() - this.startTime)
+      : this.elapsedBeforePause;
 
     return Math.min(elapsed, this.getDuration());
   }
