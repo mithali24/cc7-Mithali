@@ -7,8 +7,6 @@ import type { Action, State, Beat } from "./types";
 let totalPausedTime = 0;
 let pauseStart = 0;
 
-console.log("MAIN TS LOADED");
-
 document.addEventListener("DOMContentLoaded", () => {
   let state: State = {
     mode: "normal",
@@ -18,40 +16,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const status = document.getElementById("status")!;
   const progressEl = document.getElementById("play-progress") as HTMLDivElement;
 
+  const playBtn = document.getElementById("play") as HTMLButtonElement;
+  const pauseBtn = document.getElementById("pause") as HTMLButtonElement;
+  const stopBtn = document.getElementById("stop") as HTMLButtonElement;
+  const recordBtn = document.getElementById("record") as HTMLButtonElement;
+
   const validKeys = ["A", "S", "D", "F", "G", "H", "J", "K", "L"];
 
   let startTime = 0;
   let player: Player | null = null;
   let audioUnlocked = false;
 
-  const playBtn = document.getElementById("play") as HTMLButtonElement;
-  const pauseBtn = document.getElementById("pause") as HTMLButtonElement;
-  const stopBtn = document.getElementById("stop") as HTMLButtonElement;
+  let isPlaying = false;
+  let animationFrame: number | null = null;
 
   function showStatus(message: string) {
     status.textContent = message;
-    status.classList.remove("show-status");
-    void (status as HTMLElement).offsetWidth;
-    status.classList.add("show-status");
   }
 
   function dispatch(action: Action | { type: "__INIT__" }) {
     state = reducer(state, action as Action);
 
-    const isRecordingSession =
+    const isRecording =
       state.mode === "recording-progress" || state.mode === "recording-paused";
 
-    // Play button
-    playBtn.disabled =
-      isRecordingSession || state.currentRecording.length === 0;
+    recordBtn.disabled = state.mode === "recording-progress";
 
-    // Pause button (enabled in BOTH recording states)
-    pauseBtn.disabled = !isRecordingSession;
+    playBtn.disabled = isRecording || state.currentRecording.length === 0;
 
-    // Stop button (IMPORTANT: also enabled in paused state)
-    stopBtn.disabled = !isRecordingSession;
+    pauseBtn.disabled = !isRecording;
+    stopBtn.disabled = !isRecording;
 
-    // Button label change
     pauseBtn.textContent =
       state.mode === "recording-paused" ? "Resume" : "Pause";
   }
@@ -59,9 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function unlockAudio() {
     if (audioUnlocked) return;
 
-    const audios = document.querySelectorAll("audio");
-
-    audios.forEach((audio) => {
+    document.querySelectorAll("audio").forEach((audio) => {
       audio
         .play()
         .then(() => {
@@ -80,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ) as HTMLAudioElement;
 
     if (!audio) return;
-
     audio.currentTime = 0;
     audio.play().catch(() => {});
   }
@@ -93,18 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!keyEl) return;
 
     keyEl.classList.add("active");
-
-    setTimeout(() => {
-      keyEl.classList.remove("active");
-    }, 100);
+    setTimeout(() => keyEl.classList.remove("active"), 120);
   }
 
   window.addEventListener("keydown", (e) => {
     const key = e.key.toUpperCase();
-
     if (!validKeys.includes(key)) return;
 
-    showStatus(`${key} pressed`);
     highlightKey(key);
     playSound(key);
 
@@ -119,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  document.getElementById("record")!.onclick = () => {
+  recordBtn.onclick = () => {
     unlockAudio();
 
     totalPausedTime = 0;
@@ -153,30 +140,42 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  document.getElementById("stop")!.onclick = () => {
+  stopBtn.onclick = () => {
     dispatch({ type: "STOP_RECORDING" });
-
     pauseBtn.textContent = "Pause";
     showStatus("Recording stopped");
   };
 
-  document.getElementById("play")!.onclick = () => {
+  playBtn.onclick = () => {
     if (state.currentRecording.length === 0) {
       alert("Nothing recorded!");
       return;
     }
 
+    if (isPlaying && player) {
+      player.pause();
+      isPlaying = false;
+      playBtn.textContent = "▶ Play";
+      showStatus("Playback paused");
+
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      return;
+    }
+
     dispatch({ type: "START_PLAYBACK" });
-
-    showStatus("Playing recording");
-
-    progressEl.style.width = "0%";
 
     player = new Player(state.currentRecording, (beat) => {
       playSound(beat.key);
+      highlightKey(beat.key);
     });
 
     player.play();
+
+    isPlaying = true;
+    playBtn.textContent = "⏸ Pause";
+    showStatus("Playing recording");
+
+    progressEl.style.width = "0%";
 
     const start = performance.now();
     const duration = player.getDuration();
@@ -187,26 +186,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
       progressEl.style.width = `${progress}%`;
 
-      if (progress < 100) {
-        requestAnimationFrame(tick);
+      if (progress < 100 && isPlaying) {
+        animationFrame = requestAnimationFrame(tick);
       }
     };
 
-    requestAnimationFrame(tick);
+    animationFrame = requestAnimationFrame(tick);
   };
 
   document.getElementById("clear")!.onclick = () => {
     const shouldClear = confirm(
       "Are you sure you want to clear the recording?",
     );
-
     if (!shouldClear) return;
 
     dispatch({ type: "CLEAR_RECORDING" });
     clearRecording();
 
     progressEl.style.width = "0%";
-
     showStatus("Recording cleared");
   };
 
@@ -214,6 +211,5 @@ document.addEventListener("DOMContentLoaded", () => {
     saveRecording(state.currentRecording);
   });
 
-  // ✅ initialize UI correctly
   dispatch({ type: "__INIT__" });
 });

@@ -132,13 +132,11 @@ button:disabled {
   }
 }
 
-/* ✅ FIXED: Play button stays clean */
 #play {
   position: relative;
   overflow: hidden;
 }
 
-/* ❌ REMOVED positioning inside button */
 #play-progress {
   height: 100%;
   width: 0%;
@@ -146,9 +144,8 @@ button:disabled {
   transition: width 0.05s linear;
 }
 
-/* ✅ NEW: Separate progress bar container */
 .progress-container {
-  width: 320px;
+  width: 160px;
   height: 6px;
   margin: 10px auto 0 auto;
   background: rgba(255, 255, 255, 0.15);
@@ -156,7 +153,6 @@ button:disabled {
   overflow: hidden;
 }
 
-/* make inner bar fill container */
 .progress-container #play-progress {
   height: 100%;
   width: 0%;
@@ -171,37 +167,28 @@ button span.icon {
 
 #status {
   position: fixed;
-  top: 50%;
+  top: 15px;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  font-size: 3rem;
+  transform: translateX(-50%);
+
+  padding: 10px 20px;
+  border-radius: 20px;
+
   color: #ffc600;
-  text-align: center;
-  opacity: 0;
-  pointer-events: none;
-}
+  font-size: 1.8rem;
+  font-weight: 600;
 
-.show-status {
-  animation: zoomFade 1s ease forwards;
-}
-
-@keyframes zoomFade {
-  0% {
-    transform: translate(-50%, -50%) scale(0.5);
-    opacity: 0;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
-  }
+  z-index: 1000;
 }
 
 .key.active {
   transform: scale(1.1);
   background: rgba(255, 255, 255, 0.3);
   transition: 0.1s;
+}
+
+.play-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
